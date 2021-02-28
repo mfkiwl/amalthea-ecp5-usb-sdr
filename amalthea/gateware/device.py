@@ -6,11 +6,13 @@ import sys
 import logging
 import time
 import usb1
+import xdg.BaseDirectory
 
 import numpy as np
 
 from nmigen                          import *
 from nmigen.lib.fifo                 import AsyncFIFO
+from nmigen.build.run                import LocalBuildProducts
 
 from usb_protocol.types              import USBRequestType
 from usb_protocol.emitters           import DeviceDescriptorCollection
@@ -18,6 +20,7 @@ from usb_protocol.emitters           import DeviceDescriptorCollection
 from luna                            import top_level_cli
 from luna.usb2                       import *
 from luna.gateware.usb.usb2.request  import USBRequestHandler
+from luna.gateware.platform          import get_appropriate_platform
 
 from .radio                          import IQReceiver, RadioSPI
 from .demod                          import CORDICDemod
@@ -124,6 +127,21 @@ class Device(Elaboratable):
         block_id, output_id = source
         self._usb_outputs.append(self._blocks[block_id].outputs[output_id])
         self._usb_connections.append((len(self._usb_outputs)-1, sink))
+
+    def flash(self):
+        platform = get_appropriate_platform()
+        plan = platform.build(self, do_build=False)
+        cache_dir = os.path.join(
+            xdg.BaseDirectory.save_cache_path('amalthea'),
+            'build',
+            plan.digest().hex()
+        )
+        if os.path.exists(cache_dir):
+            products = LocalBuildProducts(cache_dir)
+        else:
+            products = plan.execute_local(cache_dir)
+
+        platform.toolchain_program(products, name="top")
 
     def finalize_usb_connections(self, tb):
         def to_np_type(output):

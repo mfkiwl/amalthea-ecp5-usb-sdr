@@ -10,7 +10,7 @@ options:
     gen_linking: dynamic
     generate_options: qt_gui
     hier_block_src_path: '.:'
-    id: hybridsdr
+    id: hybridsdr_wb
     max_nouts: '0'
     output_language: python
     placement: (0,0)
@@ -41,7 +41,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [268, 109]
+    coordinate: [332, 39]
     rotation: 0
     state: true
 - name: samp_rate
@@ -68,7 +68,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [225, 307]
+    coordinate: [224, 320]
     rotation: 0
     state: true
 - name: amalthea_rx_0
@@ -83,7 +83,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [40, 217]
+    coordinate: [71, 182]
     rotation: 0
     state: true
 - name: fosphor_qt_sink_c_0
@@ -102,9 +102,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [499, 155]
+    coordinate: [312, 139]
     rotation: 0
-    state: true
+    state: enabled
 - name: import_0
   id: import
   parameters:
@@ -115,7 +115,20 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [546, 18]
+    coordinate: [780, 34]
+    rotation: 0
+    state: true
+- name: import_1
+  id: import
+  parameters:
+    alias: ''
+    comment: ''
+    imports: import time
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [780, 84]
     rotation: 0
     state: true
 - name: qtgui_time_sink_x_0
@@ -212,14 +225,16 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [537, 317]
+    coordinate: [592, 253]
     rotation: 0
     state: true
 - name: snippet_0
   id: snippet
   parameters:
     alias: ''
-    code: 'self.amalthea_device.flash()
+    code: 'top_level_cli(self.amalthea_device)
+
+      time.sleep(10)
 
       self.amalthea_device.finalize_usb_connections(self)'
     comment: ''
@@ -229,16 +244,31 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [310, 18]
+    coordinate: [548, 33]
+    rotation: 0
+    state: true
+- name: wishbone_counter_0
+  id: wishbone_counter
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [206, 533]
     rotation: 0
     state: true
 
 connections:
 - [amalthea_demod_0, '0', qtgui_time_sink_x_0, '0']
 - [amalthea_demod_0, '1', qtgui_time_sink_x_0, '1']
-- [amalthea_demod_0, '2', qtgui_time_sink_x_0, '2']
 - [amalthea_rx_0, '0', amalthea_demod_0, '0']
 - [amalthea_rx_0, '0', fosphor_qt_sink_c_0, '0']
+- [wishbone_counter_0, '0', qtgui_time_sink_x_0, '2']
 
 metadata:
   file_format: 1
